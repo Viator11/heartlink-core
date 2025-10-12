@@ -1,0 +1,21 @@
+"use client";
+import { useEffect, useState } from "react";
+
+export default function Profile(){
+  const [profile,setProfile]=useState<any>(null);
+  useEffect(()=>{
+    const load=async()=>{
+      const t=localStorage.getItem("token");
+      const r=await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profiles/me`,{headers:{Authorization:`Bearer ${t}`}});
+      setProfile(await r.json());
+    };
+    load();
+  },[]);
+  if(!profile) return <p>Loading…</p>;
+  return (
+    <div>
+      <h2 className="text-xl font-bold">{profile.display_name}</h2>
+      <p>{profile.bio||"No bio yet."}</p>
+    </div>
+  );
+}

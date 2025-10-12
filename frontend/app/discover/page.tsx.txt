@@ -1,0 +1,22 @@
+"use client";
+import { useEffect, useState } from "react";
+
+export default function Discover(){
+  const [people,setPeople]=useState<any[]>([]);
+  useEffect(()=>{
+    const load=async()=>{
+      const t=localStorage.getItem("token");
+      const r=await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profiles/discover`,{headers:{Authorization:`Bearer ${t}`}});
+      setPeople(await r.json());
+    };
+    load();
+  },[]);
+  return (
+    <div>
+      <h2 className="text-xl font-bold mb-3">Discover</h2>
+      <ul className="flex flex-col gap-2">
+        {people.map(p=><li key={p.id} className="border p-2">{p.display_name} ({p.age})</li>)}
+      </ul>
+    </div>
+  );
+}

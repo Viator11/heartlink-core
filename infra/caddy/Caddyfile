@@ -1,0 +1,17 @@
+
+{
+    # email ops@heartlink.love
+}
+
+app.heartlink.love {
+    encode gzip
+    log
+    reverse_proxy frontend:3000
+}
+
+api.heartlink.love {
+    encode gzip
+    log
+    @api path /api/* /openapi.json /docs /ws/*
+    reverse_proxy backend:8000
+}

@@ -1,0 +1,14 @@
+import Link from "next/link";
+
+export default function HomePage() {
+  return (
+    <main className="flex flex-col gap-4 text-center">
+      <h1 className="text-3xl font-bold">❤️ HeartLink v3.0 Pro</h1>
+      <p className="text-gray-600">Modern dating app for real connections.</p>
+      <div className="flex justify-center gap-4">
+        <Link href="/login" className="text-blue-600">Login</Link>
+        <Link href="/register" className="text-blue-600">Register</Link>
+      </div>
+    </main>
+  );
+}

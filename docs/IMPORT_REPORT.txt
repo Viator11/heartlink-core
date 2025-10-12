@@ -1,0 +1,8 @@
+HeartLink monorepo import report — 2025-10-12 08:55 UTC
+
+Detected frontend candidates: ['/mnt/data/_import_src/heartlink-v3.0-pro/frontend']
+Detected backend candidates: ['/mnt/data/_import_src/heartlink-v3.0-pro/backend/app', '/mnt/data/_import_src/heartlink-v3.0-pro/backend']
+Chosen frontend root: /mnt/data/_import_src/heartlink-v3.0-pro/frontend
+Chosen backend root: /mnt/data/_import_src/heartlink-v3.0-pro/backend
+Frontend moved: True
+Backend moved: True

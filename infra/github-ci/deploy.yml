@@ -1,0 +1,43 @@
+
+name: deploy
+on:
+  push:
+    branches: [ "main", "staging" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Terraform Init & Plan (Cloudflare + Hetzner)
+        working-directory: infra/terraform
+        env:
+          TF_VAR_cloudflare_account_id: ${{ secrets.CF_ACCOUNT_ID }}
+          TF_VAR_cloudflare_api_token: ${{ secrets.CF_API_TOKEN }}
+          TF_VAR_hetzner_token: ${{ secrets.HCLOUD_TOKEN }}
+        run: |
+          for d in cloudflare hetzner; do
+            cd $d
+            terraform init -input=false
+            terraform validate
+            terraform plan -input=false -out=tfplan || true
+            cd ..
+          done
+
+      - name: Terraform Apply (manual approval recommended)
+        if: github.ref == 'refs/heads/main'
+        working-directory: infra/terraform
+        env:
+          TF_VAR_cloudflare_account_id: ${{ secrets.CF_ACCOUNT_ID }}
+          TF_VAR_cloudflare_api_token: ${{ secrets.CF_API_TOKEN }}
+          TF_VAR_hetzner_token: ${{ secrets.HCLOUD_TOKEN }}
+        run: |
+          for d in cloudflare hetzner; do
+            cd $d
+            terraform apply -auto-approve tfplan || true
+            cd ..

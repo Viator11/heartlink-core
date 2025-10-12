@@ -1,0 +1,74 @@
+
+version: "3.9"
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: heartlink
+      POSTGRES_USER: heartlink
+      POSTGRES_PASSWORD: devpassword
+    ports: ["5432:5432"]
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    ports: ["6379:6379"]
+
+  clamav:
+    image: clamav/clamav:stable
+    ports: ["3310:3310"]
+
+  backend:
+    build: ../../backend
+    environment:
+      ENV: dev
+      DB_URL: postgresql+psycopg://heartlink:devpassword@db:5432/heartlink
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET: localdevsecret
+      SMTP_HOST: localhost
+      SMTP_PORT: 25
+      SMTP_FROM: noreply@localhost
+      S3_ENDPOINT: http://minio:9000
+      S3_BUCKET: heartlink-local
+      S3_ACCESS_KEY: minioadmin
+      S3_SECRET_KEY: minioadmin
+      S3_USE_PATH_STYLE: 1
+      STRIPE_SECRET_KEY: sk_test_placeholder
+      STRIPE_WEBHOOK_SECRET: whsec_placeholder
+      CLAMAV_HOST: clamav
+      CLAMAV_PORT: 3310
+      CORS_ORIGINS: http://localhost:3000
+    depends_on: [db, redis, clamav, minio]
+    ports: ["8000:8000"]
+
+  frontend:
+    build: ../../frontend
+    environment:
+      NEXT_PUBLIC_API_BASE: http://localhost:8000
+    depends_on: [backend]
+    ports: ["3000:3000"]
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --address ":9000" --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports: ["9000:9000", "9001:9001"]
+    volumes:
+      - minio:/data
+
+volumes:
+  dbdata:
+  minio:
+
+# Healthchecks
+caddy:
+  image: caddy:2
+  command: caddy version
+  healthcheck:
+    test: ["CMD", "caddy", "version"]
+    interval: 30s
+    timeout: 3s
+    retries: 3
