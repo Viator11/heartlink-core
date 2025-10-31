@@ -3,7 +3,7 @@ import json
 import os
 
 POSTMARK_TOKEN = os.getenv("POSTMARK_API_TOKEN") or os.getenv("SMTP_USER")
-FROM_EMAIL = os.getenv("SMTP_FROM", "noreply@mail.heartlink.love")
+FROM_EMAIL = os.getenv("SMTP_FROM", "noreply@heartlink.love")
 
 def send_verify_email(email: str, username: str | None, verify_link: str, lang: str = "ru"):
     if not POSTMARK_TOKEN:
@@ -11,7 +11,7 @@ def send_verify_email(email: str, username: str | None, verify_link: str, lang: 
         return False
 
     payload = {
-        "From": f"HeartLink ❤️ <{FROM_EMAIL}>",
+        "From": f"HeartLink ❤ ️ <{FROM_EMAIL}>",
         "To": email,
         "TemplateAlias": "verify-email",
         "TemplateModel": {
